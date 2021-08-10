@@ -15,6 +15,7 @@ func TestToSliceOfChunks_NotPositiveSize(t *testing.T) {
 	values := []int{1, 2, 3, 4, 5, 6, 7}
 	assertEquals(t, ToSliceOfChunks(values, 0), [][]int{})
 	assertEquals(t, ToSliceOfChunks(values, -1), [][]int{})
+	assertEquals(t, ToSliceOfChunks(nil, -1), [][]int{})
 }
 
 func TestToSliceOfChunks_EmptySlice(t *testing.T) {
