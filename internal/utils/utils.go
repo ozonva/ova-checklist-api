@@ -29,7 +29,7 @@ func ToSliceOfChunks(values []int, size int) [][]int {
 }
 
 func InvertMap(dict map[string]int) map[int]string {
-	result := make(map[int]string)
+	result := make(map[int]string, len(dict))
 	for k, v := range dict {
 		if _, exists := result[v]; exists {
 			panic(fmt.Sprintf("collision for key: %v", v))
