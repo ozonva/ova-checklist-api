@@ -13,20 +13,20 @@ func TestToSliceOfChunks(t *testing.T) {
 		size     int
 		expected [][]int
 	}{
-		{values: []int{1, 2, 3, 4, 5, 6, 7}, size: 0, expected: [][]int{}},
-		{values: []int{1, 2, 3, 4, 5, 6, 7}, size: -1, expected: [][]int{}},
-		{values: nil, size: -1, expected: [][]int{}},
-		{values: []int{}, size: 2, expected: [][]int{}},
-		{values: nil, size: 2, expected: [][]int{}},
-		{values: []int{}, size: -1, expected: [][]int{}},
-		{values: []int{1}, size: 2, expected: [][]int{{1}}},
-		{values: []int{1, 2}, size: 3, expected: [][]int{{1, 2}}},
-		{values: []int{1}, size: 1, expected: [][]int{{1}}},
-		{values: []int{1, 2}, size: 1, expected: [][]int{{1}, {2}}},
-		{values: []int{1, 2, 3, 4, 5, 6, 7, 8}, size: 2, expected: [][]int{{1, 2}, {3, 4}, {5, 6}, {7, 8}}},
-		{values: []int{1, 2, 3}, size: 2, expected: [][]int{{1, 2}, {3}}},
-		{values: []int{1, 2, 3, 4}, size: 3, expected: [][]int{{1, 2, 3}, {4}}},
-		{values: []int{1, 2, 3, 4, 5, 6, 7, 8}, size: 3, expected: [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8}}},
+		{values: []int{1, 2, 3, 4, 5, 6, 7},       size: 0,     expected: [][]int{}},
+		{values: []int{1, 2, 3, 4, 5, 6, 7},       size: -1,    expected: [][]int{}},
+		{values: nil,                              size: -1,    expected: [][]int{}},
+		{values: []int{},                          size: 2,     expected: [][]int{}},
+		{values: nil,                              size: 2,     expected: [][]int{}},
+		{values: []int{},                          size: -1,    expected: [][]int{}},
+		{values: []int{1},                         size: 2,     expected: [][]int{{1}}},
+		{values: []int{1, 2},                      size: 3,     expected: [][]int{{1, 2}}},
+		{values: []int{1},                         size: 1,     expected: [][]int{{1}}},
+		{values: []int{1, 2},                      size: 1,     expected: [][]int{{1}, {2}}},
+		{values: []int{1, 2, 3, 4, 5, 6, 7, 8},    size: 2,     expected: [][]int{{1, 2}, {3, 4}, {5, 6}, {7, 8}}},
+		{values: []int{1, 2, 3},                   size: 2,     expected: [][]int{{1, 2}, {3}}},
+		{values: []int{1, 2, 3, 4},                size: 3,     expected: [][]int{{1, 2, 3}, {4}}},
+		{values: []int{1, 2, 3, 4, 5, 6, 7, 8},    size: 3,     expected: [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8}}},
 	}
 
 	for testId, ctx := range tests {
@@ -41,9 +41,9 @@ func TestInvertMap(t *testing.T) {
 		in  map[string]int
 		out map[int]string
 	}{
-		{in: map[string]int{}, out: map[int]string{}},
-		{in: nil, out: map[int]string{}},
-		{in: map[string]int{"hello": 1, "world": 2}, out: map[int]string{1: "hello", 2: "world"}},
+		{in: map[string]int{},                          out: map[int]string{}},
+		{in: nil,                                       out: map[int]string{}},
+		{in: map[string]int{"hello": 1, "world": 2},    out: map[int]string{1: "hello", 2: "world"}},
 	}
 
 	for testId, ctx := range tests {
@@ -74,11 +74,11 @@ func TestFilterByBlacklist(t *testing.T) {
 		in  []int
 		out []int
 	}{
-		{in: []int{1, 2, 3, 4, 5, 8, 9}, out: []int{3, 5, 9}},
-		{in: []int{1}, out: []int{}},
-		{in: []int{3}, out: []int{3}},
-		{in: []int{}, out: []int{}},
-		{in: nil, out: []int{}},
+		{in: []int{1, 2, 3, 4, 5, 8, 9},    out: []int{3, 5, 9}},
+		{in: []int{1},                      out: []int{}},
+		{in: []int{3},                      out: []int{3}},
+		{in: []int{},                       out: []int{}},
+		{in: nil,                           out: []int{}},
 	}
 
 	for testId, ctx := range tests {
