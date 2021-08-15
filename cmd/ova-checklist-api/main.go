@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"ova-checklist-api/internal/config"
+)
 
 func main() {
-	fmt.Println("Hi there! You are running ova-checklist-api.")
+	simpleConfig := config.OpenSimpleConfig("configs/simple_config.json")
+	fmt.Printf("Hi there! You are running ova-checklist-api. Current environment: %s\n", simpleConfig.Environment)
 }

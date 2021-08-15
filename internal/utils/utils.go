@@ -1,6 +1,15 @@
 package utils
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+
+	"ova-checklist-api/internal/types"
+)
+
+var (
+	ErrUserIdCollision = errors.New("two or more user IDs are being used as map keys")
+)
 
 func min(a, b int) int {
 	if a < b {
@@ -56,4 +65,34 @@ func FilterByBlacklist(values []int) []int {
 		}
 	}
 	return result
+}
+
+func SplitToChunks(checklists []types.Checklist, size int) [][]types.Checklist {
+	if size <= 0 {
+		return [][]types.Checklist{}
+	}
+
+	capacity := len(checklists) / size
+	if len(checklists)%size != 0 {
+		capacity++
+	}
+
+	// Allocate enough space before slicing in order to avoid additional allocations
+	result := make([][]types.Checklist, 0, capacity)
+	for begin := 0; begin < len(checklists); begin += size {
+		end := min(begin+size, len(checklists))
+		result = append(result, checklists[begin:end])
+	}
+	return result
+}
+
+func MapChecklistsByUserId(checklists []types.Checklist) (map[uint64]types.Checklist, error) {
+	result := make(map[uint64]types.Checklist, len(checklists))
+	for _, checklist := range checklists {
+		if _, exists := result[checklist.UserId]; exists {
+			return nil, ErrUserIdCollision
+		}
+		result[checklist.UserId] = checklist
+	}
+	return result, nil
 }
