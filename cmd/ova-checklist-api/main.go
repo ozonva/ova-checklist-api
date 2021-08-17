@@ -3,9 +3,14 @@ package main
 import (
 	"fmt"
 	"ova-checklist-api/internal/config"
+	"time"
 )
 
 func main() {
-	simpleConfig := config.OpenSimpleConfig("configs/simple_config.json")
-	fmt.Printf("Hi there! You are running ova-checklist-api. Current environment: %s\n", simpleConfig.Environment)
+	fmt.Printf("Hi there! You are running ova-checklist-api\n")
+	configReader := config.NewSimpleDynamicConfigReader(
+		"configs/simple_dynamic_config.json",
+		5 * time.Second,
+	)
+	configReader.Update()
 }

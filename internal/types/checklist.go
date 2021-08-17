@@ -1,24 +1,36 @@
 package types
 
 import (
-	"encoding/json"
+	"fmt"
 )
 
+// ChecklistItem implements fmt.Stringer
 type ChecklistItem struct {
 	Title string
 	IsComplete bool
 }
 
+// Checklist implements fmt.Stringer
 type Checklist struct {
-	UserId uint64
-	Title string
+	UserID uint64
+	Title  string
 	Description string
 	Items []ChecklistItem
 }
 
-func (c *Checklist) String() (string, error) {
-	bytes, err := json.Marshal(*c)
-	return string(bytes), err
+func (i *ChecklistItem) determineStatus() string {
+	if i.IsComplete {
+		return "Complete"
+	}
+	return "Incomplete"
+}
+
+func (i *ChecklistItem) String() string {
+	return fmt.Sprintf("%v: %v", i.Title, i.determineStatus())
+}
+
+func (c *Checklist) String() string {
+	return fmt.Sprintf("%v: %v", c.Title, c.Description)
 }
 
 func (c *Checklist) IsEmpty() bool {
@@ -32,10 +44,4 @@ func (c *Checklist) IsComplete() bool {
 		}
 	}
 	return true
-}
-
-func ChecklistFromString(value string) (Checklist, error) {
-	var checklist Checklist
-	err := json.Unmarshal([]byte(value), &checklist)
-	return checklist, err
 }

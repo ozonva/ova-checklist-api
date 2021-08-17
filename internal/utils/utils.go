@@ -89,10 +89,10 @@ func SplitToChunks(checklists []types.Checklist, size int) [][]types.Checklist {
 func MapChecklistsByUserId(checklists []types.Checklist) (map[uint64]types.Checklist, error) {
 	result := make(map[uint64]types.Checklist, len(checklists))
 	for _, checklist := range checklists {
-		if _, exists := result[checklist.UserId]; exists {
+		if _, exists := result[checklist.UserID]; exists {
 			return nil, ErrUserIdCollision
 		}
-		result[checklist.UserId] = checklist
+		result[checklist.UserID] = checklist
 	}
 	return result, nil
 }

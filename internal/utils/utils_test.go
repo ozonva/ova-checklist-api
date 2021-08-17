@@ -96,20 +96,110 @@ func TestSplitToChunks(t *testing.T) {
 		size         int
 		expected     [][]types.Checklist
 	}{
-		{checklists: buildChecklistSlice(7),       size: 0,     expected: [][]types.Checklist{}},
-		{checklists: buildChecklistSlice(7),       size: -1,    expected: [][]types.Checklist{}},
-		{checklists: nil,                          size: -1,    expected: [][]types.Checklist{}},
-		{checklists: []types.Checklist{},          size: 2,     expected: [][]types.Checklist{}},
-		{checklists: nil,                          size: 2,     expected: [][]types.Checklist{}},
-		{checklists: []types.Checklist{},          size: -1,    expected: [][]types.Checklist{}},
-		{checklists: buildChecklistSlice(1),       size: 2,     expected: buildChecklistChunks(1, 1)},
-		{checklists: buildChecklistSlice(2),       size: 3,     expected: buildChecklistChunks(2, 3)},
-		{checklists: buildChecklistSlice(1),       size: 1,     expected: buildChecklistChunks(1, 1)},
-		{checklists: buildChecklistSlice(2),       size: 1,     expected: buildChecklistChunks(2, 1)},
-		{checklists: buildChecklistSlice(8),       size: 2,     expected: buildChecklistChunks(8, 2)},
-		{checklists: buildChecklistSlice(3),       size: 2,     expected: buildChecklistChunks(3, 2)},
-		{checklists: buildChecklistSlice(4),       size: 3,     expected: buildChecklistChunks(4, 3)},
-		{checklists: buildChecklistSlice(8),       size: 3,     expected: buildChecklistChunks(8, 3)},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1)},
+			size: 0,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1)},
+			size: -1,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: nil,
+			size: -1,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: []types.Checklist{},
+			size: 2,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: nil,
+			size: 2,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: []types.Checklist{},
+			size: -1,
+			expected: [][]types.Checklist{},
+		},
+		{
+			checklists: []types.Checklist{checklist(0)},
+			size: 2,
+			expected: [][]types.Checklist{
+				{checklist(0)},
+			},
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1)},
+			size: 3,
+			expected: [][]types.Checklist{
+				{checklist(0), checklist(1)},
+			},
+		},
+		{
+			checklists: []types.Checklist{checklist(0)},
+			size: 1,
+			expected: [][]types.Checklist{
+				{checklist(0)},
+			},
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1)},
+			size: 1,
+			expected: [][]types.Checklist{
+				{checklist(0)},
+				{checklist(1)},
+			},
+		},
+		{
+			checklists: []types.Checklist{
+				checklist(0), checklist(1),
+				checklist(2), checklist(3),
+				checklist(4), checklist(5),
+				checklist(6), checklist(7),
+			},
+			size: 2,
+			expected: [][]types.Checklist{
+				{checklist(0), checklist(1)},
+				{checklist(2), checklist(3)},
+				{checklist(4), checklist(5)},
+				{checklist(6), checklist(7)},
+			},
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1), checklist(2)},
+			size: 2,
+			expected: [][]types.Checklist{
+				{checklist(0), checklist(1)},
+				{checklist(2)},
+			},
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(1), checklist(2), checklist(3)},
+			size: 3,
+			expected: [][]types.Checklist{
+				{checklist(0), checklist(1), checklist(2)},
+				{checklist(3)},
+			},
+		},
+		{
+			checklists: []types.Checklist{
+				checklist(0), checklist(1),
+				checklist(2), checklist(3),
+				checklist(4), checklist(5),
+				checklist(6), checklist(7),
+			},
+			size: 3,
+			expected: [][]types.Checklist{
+				{checklist(0), checklist(1), checklist(2)},
+				{checklist(3), checklist(4), checklist(5)},
+				{checklist(6), checklist(7)},
+			},
+		},
 	}
 
 	for testId, ctx := range tests {
@@ -125,11 +215,39 @@ func TestMapChecklistsByUserId(t *testing.T) {
 		expected      map[uint64]types.Checklist
 		expectedError error
 	}{
-		{checklists: buildChecklistSlice(0), expected: buildChecklistMap(0), expectedError: nil},
-		{checklists: buildChecklistSlice(1), expected: buildChecklistMap(1), expectedError: nil},
-		{checklists: buildChecklistSlice(8), expected: buildChecklistMap(8), expectedError: nil},
 		{
-			checklists: []types.Checklist{buildChecklist(0), buildChecklist(0)},
+			checklists: []types.Checklist{},
+			expected: map[uint64]types.Checklist{},
+			expectedError: nil,
+		},
+		{
+			checklists: []types.Checklist{checklist(0)},
+			expected: map[uint64]types.Checklist{
+				0: checklist(0),
+			},
+			expectedError: nil,
+		},
+		{
+			checklists: []types.Checklist{
+				checklist(0), checklist(1),
+				checklist(2), checklist(3),
+				checklist(4), checklist(5),
+				checklist(6), checklist(7),
+			},
+			expected: map[uint64]types.Checklist{
+				0: checklist(0),
+				1: checklist(1),
+				2: checklist(2),
+				3: checklist(3),
+				4: checklist(4),
+				5: checklist(5),
+				6: checklist(6),
+				7: checklist(7),
+			},
+			expectedError: nil,
+		},
+		{
+			checklists: []types.Checklist{checklist(0), checklist(0)},
 			expected: nil,
 			expectedError: ErrUserIdCollision,
 		},
@@ -146,51 +264,13 @@ func TestMapChecklistsByUserId(t *testing.T) {
 	}
 }
 
-func buildChecklist(userId uint64) types.Checklist {
+func checklist(userId uint64) types.Checklist {
 	return types.Checklist{
-		UserId:      userId,
+		UserID:      userId,
 		Title:       "Default checklist",
 		Description: "Testing checklist utils",
 		Items: []types.ChecklistItem{
 			{"Step 1", false},
 		},
 	}
-}
-
-func buildChecklistSlice(size int) []types.Checklist {
-	result := make([]types.Checklist, size)
-	for i := range result {
-		result[i] = buildChecklist(uint64(i))
-	}
-	return result
-}
-
-func buildChecklistMap(size int) map[uint64]types.Checklist {
-	result := make(map[uint64]types.Checklist, size)
-	for i := 0; i < size; i++ {
-		result[uint64(i)] = buildChecklist(uint64(i))
-	}
-	return result
-}
-
-func buildChecklistChunks(checklistCount, chunkSize int) [][]types.Checklist {
-	result := make([][]types.Checklist, 0)
-	for {
-		if checklistCount <= 0 {
-			break
-		}
-		sliceSize := min(checklistCount, chunkSize)
-		result = append(result, buildChecklistSlice(sliceSize))
-		checklistCount -= sliceSize
-	}
-
-	var userId uint64 = 0
-	for chunkId := range result {
-		for checklistId := range result[chunkId] {
-			result[chunkId][checklistId].UserId = userId
-			userId++
-		}
-	}
-
-	return result
 }
