@@ -11,27 +11,28 @@ var (
 	ErrUserIdCollision = errors.New("two or more user IDs are being used as map keys")
 )
 
-func min(a, b int) int {
+func min(a, b uint) uint {
 	if a < b {
 		return a
 	}
 	return b
 }
 
-func ToSliceOfChunks(values []int, size int) [][]int {
-	if size <= 0 {
+func ToSliceOfChunks(values []int, chunkSize uint) [][]int {
+	if chunkSize == 0 {
 		return [][]int{}
 	}
 
-	capacity := len(values) / size
-	if len(values)%size != 0 {
+	valuesSize := uint(len(values))
+	capacity := valuesSize / chunkSize
+	if valuesSize % chunkSize != 0 {
 		capacity++
 	}
 
 	// Allocate enough space before slicing in order to avoid additional allocations
 	result := make([][]int, 0, capacity)
-	for begin := 0; begin < len(values); begin += size {
-		end := min(begin+size, len(values))
+	for begin := uint(0); begin < valuesSize; begin += chunkSize {
+		end := min(begin + chunkSize, valuesSize)
 		result = append(result, values[begin:end])
 	}
 	return result
@@ -67,20 +68,21 @@ func FilterByBlacklist(values []int) []int {
 	return result
 }
 
-func SplitToChunks(checklists []types.Checklist, size int) [][]types.Checklist {
-	if size <= 0 {
+func SplitToChunks(checklists []types.Checklist, chunkSize uint) [][]types.Checklist {
+	if chunkSize == 0 {
 		return [][]types.Checklist{}
 	}
 
-	capacity := len(checklists) / size
-	if len(checklists)%size != 0 {
+	checklistsSize := uint(len(checklists))
+	capacity := checklistsSize / chunkSize
+	if checklistsSize % chunkSize != 0 {
 		capacity++
 	}
 
 	// Allocate enough space before slicing in order to avoid additional allocations
 	result := make([][]types.Checklist, 0, capacity)
-	for begin := 0; begin < len(checklists); begin += size {
-		end := min(begin+size, len(checklists))
+	for begin := uint(0); begin < checklistsSize; begin += chunkSize {
+		end := min(begin + chunkSize, checklistsSize)
 		result = append(result, checklists[begin:end])
 	}
 	return result

@@ -12,15 +12,12 @@ import (
 func TestToSliceOfChunks(t *testing.T) {
 	tests := []struct {
 		values   []int
-		size     int
+		size     uint
 		expected [][]int
 	}{
 		{values: []int{1, 2, 3, 4, 5, 6, 7},       size: 0,     expected: [][]int{}},
-		{values: []int{1, 2, 3, 4, 5, 6, 7},       size: -1,    expected: [][]int{}},
-		{values: nil,                              size: -1,    expected: [][]int{}},
 		{values: []int{},                          size: 2,     expected: [][]int{}},
 		{values: nil,                              size: 2,     expected: [][]int{}},
-		{values: []int{},                          size: -1,    expected: [][]int{}},
 		{values: []int{1},                         size: 2,     expected: [][]int{{1}}},
 		{values: []int{1, 2},                      size: 3,     expected: [][]int{{1, 2}}},
 		{values: []int{1},                         size: 1,     expected: [][]int{{1}}},
@@ -93,7 +90,7 @@ func TestFilterByBlacklist(t *testing.T) {
 func TestSplitToChunks(t *testing.T) {
 	tests := []struct {
 		checklists   []types.Checklist
-		size         int
+		size         uint
 		expected     [][]types.Checklist
 	}{
 		{
@@ -102,16 +99,6 @@ func TestSplitToChunks(t *testing.T) {
 			expected: [][]types.Checklist{},
 		},
 		{
-			checklists: []types.Checklist{checklist(0), checklist(1)},
-			size: -1,
-			expected: [][]types.Checklist{},
-		},
-		{
-			checklists: nil,
-			size: -1,
-			expected: [][]types.Checklist{},
-		},
-		{
 			checklists: []types.Checklist{},
 			size: 2,
 			expected: [][]types.Checklist{},
@@ -119,11 +106,6 @@ func TestSplitToChunks(t *testing.T) {
 		{
 			checklists: nil,
 			size: 2,
-			expected: [][]types.Checklist{},
-		},
-		{
-			checklists: []types.Checklist{},
-			size: -1,
 			expected: [][]types.Checklist{},
 		},
 		{
