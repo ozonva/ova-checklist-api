@@ -119,7 +119,7 @@ var _ = Describe("Saver", func() {
 			It("should keep not flushed values and try to flush them in future", func() {
 				valuesToSend := []types.Checklist{checklist(0), checklist(1), checklist(2), checklist(3)}
 				firstFlushed := []types.Checklist{checklist(1), checklist(3)}
-				// expectedRepo := []types.Checklist{checklist(1), checklist(3), checklist(0), checklist(2)}
+				expectedRepo := []types.Checklist{checklist(1), checklist(3), checklist(0), checklist(2)}
 
 				const bufferSize = 20
 				var repo []types.Checklist
@@ -156,6 +156,7 @@ var _ = Describe("Saver", func() {
 
 				s := NewSaver(flusher, bufferSize, 50*time.Millisecond)
 
+				// First phase: trying to save all values. Only 1 and 3 will be saved
 				wg.Add(1)
 				for _, value := range valuesToSend {
 					Expect(s.TrySave(value)).To(Equal(true))
@@ -163,13 +164,13 @@ var _ = Describe("Saver", func() {
 				wg.Wait()
 				Expect(repo).To(Equal(firstFlushed))
 
+				// Second phase: wait until 0 and 2 will be saved
 				wg.Add(1)
 				atomic.StoreInt32(&phase, 1)
 				wg.Wait()
+				Expect(repo).To(Equal(expectedRepo))
 
 				s.Close()
-
-				// Expect(repo).To(Equal(expectedRepo))
 			})
 		})
 	})
