@@ -66,29 +66,29 @@ func (s *saver) runDispatcher() {
 	s.waitCompletion.Add(1)
 	go func() {
 		defer s.waitCompletion.Done()
-		loop:
+	loop:
 		for {
 			timer := time.NewTimer(s.flushPeriod)
 			select {
-				case value, ok := <-s.inputPipe:
-					if ok {
-						s.buffer = append(s.buffer, value)
-						bufferSize := uint(len(s.buffer))
-						if bufferSize >= s.capacity {
-							s.flush()
-						}
+			case value, ok := <-s.inputPipe:
+				if ok {
+					s.buffer = append(s.buffer, value)
+					bufferSize := uint(len(s.buffer))
+					if bufferSize >= s.capacity {
+						s.flush()
 					}
-					timer.Stop()
-				case <-s.stopPipe:
-					for value := range s.inputPipe {
-						// Save all pending values. NB: inputPipe should be closed by now
-						s.buffer = append(s.buffer, value)
-					}
-					s.flush()
-					timer.Stop()
-					break loop
-				case <-timer.C:
-					s.flush()
+				}
+				timer.Stop()
+			case <-s.stopPipe:
+				for value := range s.inputPipe {
+					// Save all pending values. NB: inputPipe should be closed by now
+					s.buffer = append(s.buffer, value)
+				}
+				s.flush()
+				timer.Stop()
+				break loop
+			case <-timer.C:
+				s.flush()
 			}
 		}
 	}()

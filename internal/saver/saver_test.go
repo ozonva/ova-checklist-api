@@ -21,7 +21,7 @@ func TestSaver(t *testing.T) {
 
 var _ = Describe("Saver", func() {
 	var (
-		ctrl *gomock.Controller
+		ctrl    *gomock.Controller
 		flusher *mflusher.MockFlusher
 	)
 
@@ -51,7 +51,7 @@ var _ = Describe("Saver", func() {
 						repo = append(repo, values...)
 						return nil
 					})
-				s := NewSaver(flusher, bufferSize, 100500 * time.Hour)
+				s := NewSaver(flusher, bufferSize, 100500*time.Hour)
 				for i := 0; i < bufferSize; i++ {
 					value := checklist(uint64(i))
 					expectedRepo = append(expectedRepo, value)
@@ -77,8 +77,8 @@ var _ = Describe("Saver", func() {
 						repo = append(repo, values...)
 						return nil
 					})
-				s := NewSaver(flusher, bufferSize, 100500 * time.Hour)
-				for i := 0; i < bufferSize / 2; i++ {
+				s := NewSaver(flusher, bufferSize, 100500*time.Hour)
+				for i := 0; i < bufferSize/2; i++ {
 					value := checklist(uint64(i))
 					expectedRepo = append(expectedRepo, value)
 					Expect(s.TrySave(value)).To(Equal(true))
@@ -104,7 +104,7 @@ var _ = Describe("Saver", func() {
 						repo = append(repo, values...)
 						return nil
 					})
-				s := NewSaver(flusher, bufferSize, 50 * time.Millisecond)
+				s := NewSaver(flusher, bufferSize, 50*time.Millisecond)
 				Expect(s.TrySave(checklist(0))).To(Equal(true))
 				wg.Wait() // Ensure that the flush happens because of a timer tick
 				s.Close()
@@ -137,7 +137,7 @@ var _ = Describe("Saver", func() {
 						currentPhase := atomic.LoadInt32(&phase)
 						if currentPhase == 0 {
 							for _, checklist := range values {
-								if checklist.UserID % 2 == 0 {
+								if checklist.UserID%2 == 0 {
 									failed = append(failed, checklist)
 								} else {
 									flushed = append(flushed, checklist)
@@ -154,7 +154,7 @@ var _ = Describe("Saver", func() {
 						return failed
 					})
 
-				s := NewSaver(flusher, bufferSize, 50 * time.Millisecond)
+				s := NewSaver(flusher, bufferSize, 50*time.Millisecond)
 
 				wg.Add(1)
 				for _, value := range valuesToSend {
