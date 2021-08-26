@@ -1,0 +1,48 @@
+syntax = "proto3";
+package service;
+
+import "checklist.proto";
+
+option go_package = "ova-checklist-api/pkg/service";
+
+service ChecklistStorage {
+  rpc CreateChecklist(CreateChecklistRequest) returns (CreateChecklistResponse);
+  rpc DescribeChecklist(DescribeChecklistRequest) returns (DescribeChecklistResponse);
+  rpc ListChecklists(ListChecklistsRequest) returns (ListChecklistsResponse);
+  rpc RemoveChecklist(RemoveChecklistRequest) returns (RemoveChecklistResponse);
+}
+
+message CreateChecklistRequest {
+  model.Checklist checklist = 2;
+}
+
+message CreateChecklistResponse {
+  string checklist_id = 1;
+}
+
+message DescribeChecklistRequest {
+  string checklist_id = 1;
+}
+
+message DescribeChecklistResponse {
+  uint64 user_id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message ListChecklistsRequest {
+  repeated string checklist_ids = 1;
+}
+
+message ListChecklistsResponse {
+  repeated model.Checklist checklists = 1;
+}
+
+message RemoveChecklistRequest {
+  string checklist_id = 1;
+}
+
+message RemoveChecklistResponse {
+  // Non-empty if failed
+  string error = 1;
+}
