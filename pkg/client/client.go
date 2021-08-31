@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"ova-checklist-api/pkg/service"
+	"github.com/ozonva/ova-checklist-api/internal/server/generated/service"
 )
 
 type Client interface {

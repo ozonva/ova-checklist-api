@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"ova-checklist-api/internal/flusher"
-	"ova-checklist-api/internal/types"
+	"github.com/ozonva/ova-checklist-api/internal/flusher"
+	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 type Saver interface {

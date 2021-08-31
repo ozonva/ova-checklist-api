@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"ova-checklist-api/internal/types"
+	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 func TestToSliceOfChunks(t *testing.T) {

@@ -8,8 +8,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	gref "google.golang.org/grpc/reflection"
 
-	pb "ova-checklist-api/pkg/service"
+	pb "github.com/ozonva/ova-checklist-api/internal/server/generated/service"
 )
 
 type Server interface {
@@ -68,6 +69,7 @@ func New(port uint16) Server {
 		port: port,
 	}
 	pb.RegisterChecklistStorageServer(s.impl, &service{})
+	gref.Register(s.impl)
 	return s
 }
 

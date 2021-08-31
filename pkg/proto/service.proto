@@ -1,9 +1,7 @@
 syntax = "proto3";
-package service;
+package ozonva.ova.checklist.api;
 
-import "checklist.proto";
-
-option go_package = "ova-checklist-api/pkg/service";
+option go_package = "github.com/ozonva/ova-checklist-api/pkg/service";
 
 service ChecklistStorage {
   rpc CreateChecklist(CreateChecklistRequest) returns (CreateChecklistResponse);
@@ -13,7 +11,7 @@ service ChecklistStorage {
 }
 
 message CreateChecklistRequest {
-  model.Checklist checklist = 2;
+  ozonva.ova.checklist.api.Checklist checklist = 2;
 }
 
 message CreateChecklistResponse {
@@ -35,7 +33,7 @@ message ListChecklistsRequest {
 }
 
 message ListChecklistsResponse {
-  repeated model.Checklist checklists = 1;
+  repeated Checklist checklists = 1;
 }
 
 message RemoveChecklistRequest {
@@ -45,4 +43,16 @@ message RemoveChecklistRequest {
 message RemoveChecklistResponse {
   // Non-empty if failed
   string error = 1;
+}
+
+message Checklist {
+  uint64 user_id = 1;
+  string title = 2;
+  string description = 3;
+  repeated ChecklistItem items = 4;
+}
+
+message ChecklistItem {
+  string title = 1;
+  bool is_complete = 2;
 }

@@ -34,7 +34,7 @@ func NewChecklistStorageClient(cc grpc.ClientConnInterface) ChecklistStorageClie
 
 func (c *checklistStorageClient) CreateChecklist(ctx context.Context, in *CreateChecklistRequest, opts ...grpc.CallOption) (*CreateChecklistResponse, error) {
 	out := new(CreateChecklistResponse)
-	err := c.cc.Invoke(ctx, "/service.ChecklistStorage/CreateChecklist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/CreateChecklist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (c *checklistStorageClient) CreateChecklist(ctx context.Context, in *Create
 
 func (c *checklistStorageClient) DescribeChecklist(ctx context.Context, in *DescribeChecklistRequest, opts ...grpc.CallOption) (*DescribeChecklistResponse, error) {
 	out := new(DescribeChecklistResponse)
-	err := c.cc.Invoke(ctx, "/service.ChecklistStorage/DescribeChecklist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/DescribeChecklist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *checklistStorageClient) DescribeChecklist(ctx context.Context, in *Desc
 
 func (c *checklistStorageClient) ListChecklists(ctx context.Context, in *ListChecklistsRequest, opts ...grpc.CallOption) (*ListChecklistsResponse, error) {
 	out := new(ListChecklistsResponse)
-	err := c.cc.Invoke(ctx, "/service.ChecklistStorage/ListChecklists", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/ListChecklists", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *checklistStorageClient) ListChecklists(ctx context.Context, in *ListChe
 
 func (c *checklistStorageClient) RemoveChecklist(ctx context.Context, in *RemoveChecklistRequest, opts ...grpc.CallOption) (*RemoveChecklistResponse, error) {
 	out := new(RemoveChecklistResponse)
-	err := c.cc.Invoke(ctx, "/service.ChecklistStorage/RemoveChecklist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/RemoveChecklist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func _ChecklistStorage_CreateChecklist_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service.ChecklistStorage/CreateChecklist",
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/CreateChecklist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChecklistStorageServer).CreateChecklist(ctx, req.(*CreateChecklistRequest))
@@ -136,7 +136,7 @@ func _ChecklistStorage_DescribeChecklist_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service.ChecklistStorage/DescribeChecklist",
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/DescribeChecklist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChecklistStorageServer).DescribeChecklist(ctx, req.(*DescribeChecklistRequest))
@@ -154,7 +154,7 @@ func _ChecklistStorage_ListChecklists_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service.ChecklistStorage/ListChecklists",
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/ListChecklists",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChecklistStorageServer).ListChecklists(ctx, req.(*ListChecklistsRequest))
@@ -172,7 +172,7 @@ func _ChecklistStorage_RemoveChecklist_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service.ChecklistStorage/RemoveChecklist",
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/RemoveChecklist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChecklistStorageServer).RemoveChecklist(ctx, req.(*RemoveChecklistRequest))
@@ -184,7 +184,7 @@ func _ChecklistStorage_RemoveChecklist_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ChecklistStorage_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "service.ChecklistStorage",
+	ServiceName: "ozonva.ova.checklist.api.ChecklistStorage",
 	HandlerType: (*ChecklistStorageServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

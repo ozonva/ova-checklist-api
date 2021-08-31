@@ -2,9 +2,10 @@ package flusher
 
 import (
 	"log"
-	"ova-checklist-api/internal/repo"
-	"ova-checklist-api/internal/types"
-	"ova-checklist-api/internal/utils"
+
+	"github.com/ozonva/ova-checklist-api/internal/repo"
+	"github.com/ozonva/ova-checklist-api/internal/types"
+	"github.com/ozonva/ova-checklist-api/internal/utils"
 )
 
 // Flusher is an interface which flushes entities of type types.Checklist to a storage

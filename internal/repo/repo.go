@@ -1,6 +1,6 @@
 package repo
 
-import "ova-checklist-api/internal/types"
+import "github.com/ozonva/ova-checklist-api/internal/types"
 
 // Repo is an interface of a storage which stores entities of type types.Checklist
 type Repo interface {

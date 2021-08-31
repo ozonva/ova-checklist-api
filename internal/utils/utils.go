@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"ova-checklist-api/internal/types"
+	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 var (

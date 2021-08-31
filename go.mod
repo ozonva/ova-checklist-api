@@ -1,4 +1,4 @@
-module ova-checklist-api
+module github.com/ozonva/ova-checklist-api
 
 go 1.16
 

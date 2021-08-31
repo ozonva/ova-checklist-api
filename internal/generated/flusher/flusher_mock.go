@@ -5,10 +5,10 @@
 package mock_flusher
 
 import (
-	types "ova-checklist-api/internal/types"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	types "github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 // MockFlusher is a mock of Flusher interface.

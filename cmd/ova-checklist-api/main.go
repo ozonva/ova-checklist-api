@@ -6,14 +6,13 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"ova-checklist-api/internal/server"
-	"ova-checklist-api/pkg/client"
-	"ova-checklist-api/pkg/model"
-	"ova-checklist-api/pkg/service"
+	"github.com/ozonva/ova-checklist-api/internal/server"
+	"github.com/ozonva/ova-checklist-api/internal/server/generated/service"
+	"github.com/ozonva/ova-checklist-api/pkg/client"
 )
 
 func doSomeCalls(port uint16) {
-	const host = "localhost"
+	const host = "0.0.0.0"
 	c, err := client.NewClient(host, port)
 	log.Error().Msgf("Will send request(s) to: %s:%d", host, port)
 	if err != nil {
@@ -23,7 +22,7 @@ func doSomeCalls(port uint16) {
 	defer c.Close()
 
 	request := &service.CreateChecklistRequest{
-		Checklist: &model.Checklist{
+		Checklist: &service.Checklist{
 			UserId: 0,
 			Title: "Some title",
 			Description: "Desc goes here",
