@@ -2,13 +2,14 @@ package flusher
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	mrepo "ova-checklist-api/internal/generated/repo"
-	"ova-checklist-api/internal/types"
 
-	"testing"
+	mrepo "github.com/ozonva/ova-checklist-api/internal/generated/repo"
+	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 func TestFlusher(t *testing.T) {

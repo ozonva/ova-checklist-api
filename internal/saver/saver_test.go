@@ -1,17 +1,17 @@
 package saver
 
 import (
+	"sync"
+	"sync/atomic"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"sync/atomic"
 
-	mflusher "ova-checklist-api/internal/generated/flusher"
-	"ova-checklist-api/internal/types"
-
-	"sync"
-	"testing"
-	"time"
+	mflusher "github.com/ozonva/ova-checklist-api/internal/generated/flusher"
+	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 func TestSaver(t *testing.T) {

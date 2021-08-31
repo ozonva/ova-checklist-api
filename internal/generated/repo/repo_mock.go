@@ -5,10 +5,10 @@
 package mock_repo
 
 import (
-	types "ova-checklist-api/internal/types"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	types "github.com/ozonva/ova-checklist-api/internal/types"
 )
 
 // MockRepo is a mock of Repo interface.
