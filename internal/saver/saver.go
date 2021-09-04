@@ -1,6 +1,7 @@
 package saver
 
 import (
+	"context"
 	"log"
 	"sync"
 	"time"
@@ -23,6 +24,8 @@ type saver struct {
 	waitCompletion sync.WaitGroup
 	inputPipe      chan types.Checklist
 	stopPipe       chan struct{}
+	ctx            context.Context
+	ctxCancel      context.CancelFunc
 }
 
 func NewSaver(
@@ -39,6 +42,9 @@ func NewSaver(
 		inputPipe:      make(chan types.Checklist, capacity),
 		stopPipe:       make(chan struct{}),
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	result.ctx = ctx
+	result.ctxCancel = cancel
 	result.runDispatcher()
 	return result
 }
@@ -60,6 +66,7 @@ func (s *saver) Close() {
 	s.stopPipe <- struct{}{}
 	close(s.stopPipe)
 	s.waitCompletion.Wait()
+	s.ctxCancel()
 }
 
 func (s *saver) runDispatcher() {
@@ -96,7 +103,7 @@ func (s *saver) runDispatcher() {
 
 func (s *saver) flush() {
 	if len(s.buffer) > 0 {
-		failed := s.flusher.Flush(s.buffer)
+		failed := s.flusher.Flush(s.ctx, s.buffer)
 		s.buffer = s.buffer[:0]
 		s.buffer = append(s.buffer, failed...)
 	}

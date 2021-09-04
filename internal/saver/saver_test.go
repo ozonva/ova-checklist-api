@@ -1,6 +1,7 @@
 package saver
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -10,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	mflusher "github.com/ozonva/ova-checklist-api/internal/generated/flusher"
+	mflusher "github.com/ozonva/ova-checklist-api/internal/flusher/generated"
 	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
@@ -44,9 +45,9 @@ var _ = Describe("Saver", func() {
 				wg.Add(1)
 				flusher.
 					EXPECT().
-					Flush(gomock.Any()).
+					Flush(gomock.Any(), gomock.Any()).
 					Times(1).
-					DoAndReturn(func(values []types.Checklist) []types.Checklist {
+					DoAndReturn(func(ctx context.Context, values []types.Checklist) []types.Checklist {
 						defer wg.Done()
 						repo = append(repo, values...)
 						return nil
@@ -71,9 +72,9 @@ var _ = Describe("Saver", func() {
 				var expectedRepo []types.Checklist
 				flusher.
 					EXPECT().
-					Flush(gomock.Any()).
+					Flush(gomock.Any(), gomock.Any()).
 					Times(1).
-					DoAndReturn(func(values []types.Checklist) []types.Checklist {
+					DoAndReturn(func(ctx context.Context, values []types.Checklist) []types.Checklist {
 						repo = append(repo, values...)
 						return nil
 					})
@@ -97,9 +98,9 @@ var _ = Describe("Saver", func() {
 				wg.Add(1)
 				flusher.
 					EXPECT().
-					Flush(gomock.Any()).
+					Flush(gomock.Any(), gomock.Any()).
 					Times(1).
-					DoAndReturn(func(values []types.Checklist) []types.Checklist {
+					DoAndReturn(func(ctx context.Context, values []types.Checklist) []types.Checklist {
 						defer wg.Done()
 						repo = append(repo, values...)
 						return nil
@@ -127,9 +128,9 @@ var _ = Describe("Saver", func() {
 				var phase int32
 				flusher.
 					EXPECT().
-					Flush(gomock.Any()).
+					Flush(gomock.Any(), gomock.Any()).
 					AnyTimes().
-					DoAndReturn(func(values []types.Checklist) []types.Checklist {
+					DoAndReturn(func(ctx context.Context, values []types.Checklist) []types.Checklist {
 						var failed []types.Checklist
 						var flushed []types.Checklist
 

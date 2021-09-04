@@ -10,6 +10,7 @@ service ChecklistStorage {
   rpc RemoveChecklist(RemoveChecklistRequest) returns (RemoveChecklistResponse);
 }
 
+// Request: CreateChecklist
 message CreateChecklistRequest {
   ozonva.ova.checklist.api.Checklist checklist = 2;
 }
@@ -18,33 +19,35 @@ message CreateChecklistResponse {
   string checklist_id = 1;
 }
 
+// Request: DescribeChecklist
 message DescribeChecklistRequest {
   string checklist_id = 1;
 }
 
 message DescribeChecklistResponse {
-  uint64 user_id = 1;
-  string title = 2;
-  string description = 3;
+    Checklist checklist = 1;
 }
 
+// Request: ListChecklists
 message ListChecklistsRequest {
-  repeated string checklist_ids = 1;
+  uint64 user_id = 1;
+  uint64 limit = 2;
+  uint64 offset = 3;
 }
 
 message ListChecklistsResponse {
   repeated Checklist checklists = 1;
 }
 
+// Request: RemoveChecklist
 message RemoveChecklistRequest {
   string checklist_id = 1;
 }
 
 message RemoveChecklistResponse {
-  // Non-empty if failed
-  string error = 1;
 }
 
+// Additional structures
 message Checklist {
   uint64 user_id = 1;
   string title = 2;

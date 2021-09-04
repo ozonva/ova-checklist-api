@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  web:
+    container_name: ova-checklist-api
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      CONFIG_NAME: app_config.json
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: always
+  db:
+    container_name: ova-checklist-api-db
+    image: postgres:13.3-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: general
+      POSTGRES_USER: gopher
+      POSTGRES_PASSWORD: gopher
+      PGDATA: /data/postgres
+      PGTZ: 'GMT+0'
+      TZ: 'GMT+0'
+    volumes:
+      - .docker:/data/postgres
+    restart: always
