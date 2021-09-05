@@ -50,18 +50,18 @@ func (mr *MockRepoMockRecorder) AddChecklists(ctx, checklists interface{}) *gomo
 }
 
 // DescribeChecklist mocks base method.
-func (m *MockRepo) DescribeChecklist(ctx context.Context, checklistId string) (*types.Checklist, error) {
+func (m *MockRepo) DescribeChecklist(ctx context.Context, userId uint64, checklistId string) (*types.Checklist, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DescribeChecklist", ctx, checklistId)
+	ret := m.ctrl.Call(m, "DescribeChecklist", ctx, userId, checklistId)
 	ret0, _ := ret[0].(*types.Checklist)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DescribeChecklist indicates an expected call of DescribeChecklist.
-func (mr *MockRepoMockRecorder) DescribeChecklist(ctx, checklistId interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) DescribeChecklist(ctx, userId, checklistId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeChecklist", reflect.TypeOf((*MockRepo)(nil).DescribeChecklist), ctx, checklistId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeChecklist", reflect.TypeOf((*MockRepo)(nil).DescribeChecklist), ctx, userId, checklistId)
 }
 
 // ListChecklists mocks base method.
@@ -80,15 +80,15 @@ func (mr *MockRepoMockRecorder) ListChecklists(ctx, userId, limit, offset interf
 }
 
 // RemoveChecklist mocks base method.
-func (m *MockRepo) RemoveChecklist(ctx context.Context, checklistId string) error {
+func (m *MockRepo) RemoveChecklist(ctx context.Context, userId uint64, checklistId string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveChecklist", ctx, checklistId)
+	ret := m.ctrl.Call(m, "RemoveChecklist", ctx, userId, checklistId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RemoveChecklist indicates an expected call of RemoveChecklist.
-func (mr *MockRepoMockRecorder) RemoveChecklist(ctx, checklistId interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) RemoveChecklist(ctx, userId, checklistId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveChecklist", reflect.TypeOf((*MockRepo)(nil).RemoveChecklist), ctx, checklistId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveChecklist", reflect.TypeOf((*MockRepo)(nil).RemoveChecklist), ctx, userId, checklistId)
 }

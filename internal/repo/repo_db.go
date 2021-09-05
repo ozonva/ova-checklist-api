@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/pgxscan"
@@ -63,13 +64,14 @@ func (r *repoDB) ListChecklists(ctx context.Context, userId, limit, offset uint6
 	return deserializeChecklists(serializedChecklists)
 }
 
-func (r *repoDB) DescribeChecklist(ctx context.Context, checklistId string) (*types.Checklist, error) {
+func (r *repoDB) DescribeChecklist(ctx context.Context, userId uint64, checklistId string) (*types.Checklist, error) {
 	var serializedChecklists []string
 	err := r.readWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
 		selector := builder.
 			Select("data").
 			From("checklists").
 			Where(squirrel.Eq{
+				"user_id":      userId,
 				"checklist_id": checklistId,
 			}).
 			Limit(1)
@@ -80,18 +82,23 @@ func (r *repoDB) DescribeChecklist(ctx context.Context, checklistId string) (*ty
 		return nil, err
 	}
 
+	if len(serializedChecklists) == 0 {
+		return nil, errors.New("there are no any checklists with such parameters")
+	}
+
 	checklists, err := deserializeChecklists(serializedChecklists)
-	if err != nil || len(checklists) == 0 {
+	if err != nil {
 		return nil, err
 	}
 	return &checklists[0], nil
 }
 
-func (r *repoDB) RemoveChecklist(ctx context.Context, checklistId string) error {
+func (r *repoDB) RemoveChecklist(ctx context.Context, userId uint64, checklistId string) error {
 	return r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
 		remover := builder.
 			Delete("checklists").
 			Where(squirrel.Eq{
+				"user_id":      userId,
 				"checklist_id": checklistId,
 			})
 		return remover, nil

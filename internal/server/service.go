@@ -27,13 +27,13 @@ func (s *service) handleDescribeChecklist(ctx context.Context, request *pb.Descr
 	if len(request.ChecklistId) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "checklist_id parameter is absent")
 	}
-	checklist, err := s.repository.DescribeChecklist(ctx, request.ChecklistId)
+	checklist, err := s.repository.DescribeChecklist(ctx, request.UserId, request.ChecklistId)
 	if err != nil {
-		msg := fmt.Sprintf("cannot find a checklist by id %s due to an error: %v", request.ChecklistId, err)
+		msg := fmt.Sprintf("cannot find a checklist of user %d with id %s due to an error: %v", request.UserId, request.ChecklistId, err)
 		return nil, status.Error(codes.Internal, msg)
 	}
 	if checklist == nil {
-		msg := fmt.Sprintf("there is no any checklists with id %s", request.ChecklistId)
+		msg := fmt.Sprintf("there is no any checklists of user %d with id %s", request.UserId, request.ChecklistId)
 		return nil, status.Error(codes.NotFound, msg)
 	}
 	return &pb.DescribeChecklistResponse{
@@ -48,7 +48,7 @@ func (s *service) handleListChecklists(ctx context.Context, request *pb.ListChec
 		return nil, status.Error(codes.Internal, msg)
 	}
 	return &pb.ListChecklistsResponse{
-		Checklists: toProtoChecklists(checklists),
+		Checklists: toProtoUserChecklists(checklists),
 	}, nil
 }
 
@@ -56,7 +56,7 @@ func (s *service) handleRemoveChecklist(ctx context.Context, request *pb.RemoveC
 	if len(request.ChecklistId) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "checklist_id parameter is absent")
 	}
-	if err := s.repository.RemoveChecklist(ctx, request.ChecklistId); err != nil {
+	if err := s.repository.RemoveChecklist(ctx, request.UserId, request.ChecklistId); err != nil {
 		msg := fmt.Sprintf("cannot remove a checklist by id %s due to an error: %v", request.ChecklistId, err)
 		return nil, status.Error(codes.Internal, msg)
 	}

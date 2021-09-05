@@ -7,7 +7,7 @@ import (
 
 func parseProtoChecklistItem(protoItem *pb.ChecklistItem) types.ChecklistItem {
 	return types.ChecklistItem{
-		Title: protoItem.Title,
+		Title:      protoItem.Title,
 		IsComplete: protoItem.IsComplete,
 	}
 }
@@ -18,17 +18,17 @@ func parseProtoChecklist(protoChecklist *pb.Checklist) types.Checklist {
 		items = append(items, parseProtoChecklistItem(protoItem))
 	}
 	return types.Checklist{
-		ID: types.NewChecklistID(),
-		UserID: protoChecklist.UserId,
-		Title: protoChecklist.Title,
+		ID:          types.NewChecklistID(),
+		UserID:      protoChecklist.UserId,
+		Title:       protoChecklist.Title,
 		Description: protoChecklist.Description,
-		Items: items,
+		Items:       items,
 	}
 }
 
 func toProtoChecklistItem(item *types.ChecklistItem) *pb.ChecklistItem {
 	return &pb.ChecklistItem{
-		Title: item.Title,
+		Title:      item.Title,
 		IsComplete: item.IsComplete,
 	}
 }
@@ -39,17 +39,21 @@ func toProtoChecklist(checklist *types.Checklist) *pb.Checklist {
 		items = append(items, toProtoChecklistItem(&item))
 	}
 	return &pb.Checklist{
-		UserId: checklist.UserID,
-		Title: checklist.Title,
+		UserId:      checklist.UserID,
+		Title:       checklist.Title,
 		Description: checklist.Description,
-		Items: items,
+		Items:       items,
 	}
 }
 
-func toProtoChecklists(checklists []types.Checklist) []*pb.Checklist {
-	var result []*pb.Checklist
+func toProtoUserChecklists(checklists []types.Checklist) []*pb.UserChecklist {
+	result := make([]*pb.UserChecklist, 0, len(checklists))
 	for _, checklist := range checklists {
-		result = append(result, toProtoChecklist(&checklist))
+		nonUserChecklist := toProtoChecklist(&checklist)
+		result = append(result, &pb.UserChecklist{
+			Checklist:   nonUserChecklist,
+			ChecklistId: checklist.ID,
+		})
 	}
 	return result
 }
