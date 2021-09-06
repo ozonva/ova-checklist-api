@@ -1,0 +1,24 @@
+{
+  "server_config": {
+    "host": "0.0.0.0",
+    "port": 8080
+  },
+
+  "db_config": {
+    "host": "ova-checklist-api-db",
+    "port": 5432,
+    "db_name": "general",
+    "username": "gopher",
+    "password": "gopher",
+    "max_connections": 20,
+
+    "connection_tries": 60,
+    "reconnect_period_ms": 1000
+  },
+
+  "settings_config": {
+    "repo_flush_batch_size": 32,
+    "internal_buffer_size": 0,
+    "flush_period_ms": 10
+  }
+}

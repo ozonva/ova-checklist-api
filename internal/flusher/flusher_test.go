@@ -1,6 +1,7 @@
 package flusher
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -8,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	mrepo "github.com/ozonva/ova-checklist-api/internal/generated/repo"
+	mrepo "github.com/ozonva/ova-checklist-api/internal/repo/generated"
 	"github.com/ozonva/ova-checklist-api/internal/types"
 )
 
@@ -21,7 +22,12 @@ var _ = Describe("Flusher", func() {
 	var (
 		ctrl *gomock.Controller
 		repo *mrepo.MockRepo
+		ctx context.Context
 	)
+
+	BeforeSuite(func() {
+		ctx = context.TODO()
+	})
 
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
@@ -38,9 +44,9 @@ var _ = Describe("Flusher", func() {
 				f := New(1, repo)
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
+					AddChecklists(gomock.Any(), gomock.Any()).
 					Times(0)
-				Expect(f.Flush([]types.Checklist{})).To(Equal([]types.Checklist{}))
+				Expect(f.Flush(ctx, []types.Checklist{})).To(Equal([]types.Checklist{}))
 			})
 		})
 
@@ -48,12 +54,12 @@ var _ = Describe("Flusher", func() {
 			It("should call repo.AddChecklists only once", func() {
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
+					AddChecklists(gomock.Any(), gomock.Any()).
 					DoAndReturn(addChecklistsSuccess).
 					Times(1)
 				f := New(10, repo)
 				input := []types.Checklist{checklist(0), checklist(1)}
-				Expect(f.Flush(input)).To(Equal([]types.Checklist{}))
+				Expect(f.Flush(ctx, input)).To(Equal([]types.Checklist{}))
 			})
 		})
 
@@ -61,12 +67,12 @@ var _ = Describe("Flusher", func() {
 			It("should call repo.AddChecklists only once", func() {
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
+					AddChecklists(gomock.Any(), gomock.Any()).
 					DoAndReturn(addChecklistsSuccess).
 					Times(1)
 				f := New(3, repo)
 				input := []types.Checklist{checklist(0), checklist(1), checklist(2)}
-				Expect(f.Flush(input)).To(Equal([]types.Checklist{}))
+				Expect(f.Flush(ctx, input)).To(Equal([]types.Checklist{}))
 			})
 		})
 
@@ -74,14 +80,14 @@ var _ = Describe("Flusher", func() {
 			It("should call repo.AddChecklists exactly len(input)/chunkSize times", func() {
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
-					DoAndReturn(func (_ []types.Checklist) error {
+					AddChecklists(gomock.Any(), gomock.Any()).
+					DoAndReturn(func (_ context.Context, _ []types.Checklist) error {
 						return nil
 					}).
 					Times(2)
 				f := New(2, repo)
 				input := []types.Checklist{checklist(0), checklist(1), checklist(2), checklist(3)}
-				Expect(f.Flush(input)).To(Equal([]types.Checklist{}))
+				Expect(f.Flush(ctx, input)).To(Equal([]types.Checklist{}))
 			})
 		})
 
@@ -89,7 +95,7 @@ var _ = Describe("Flusher", func() {
 			It("should call repo.AddChecklists exactly len(input)/chunkSize + 1 times", func() {
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
+					AddChecklists(gomock.Any(), gomock.Any()).
 					DoAndReturn(addChecklistsSuccess).
 					Times(4)
 				f := New(3, repo)
@@ -97,7 +103,7 @@ var _ = Describe("Flusher", func() {
 					checklist(0), checklist(1), checklist(2), checklist(3), checklist(4),
 					checklist(5), checklist(6), checklist(7), checklist(8), checklist(9),
 				}
-				Expect(f.Flush(input)).To(Equal([]types.Checklist{}))
+				Expect(f.Flush(ctx, input)).To(Equal([]types.Checklist{}))
 			})
 		})
 
@@ -105,8 +111,8 @@ var _ = Describe("Flusher", func() {
 			It("should collect not pushed checklists", func() {
 				repo.
 					EXPECT().
-					AddChecklists(gomock.Any()).
-					DoAndReturn(func (chunk []types.Checklist) error {
+					AddChecklists(gomock.Any(), gomock.Any()).
+					DoAndReturn(func (_ context.Context, chunk []types.Checklist) error {
 						if chunk[0].UserID % 2 == 0 {
 							return errors.New("let's fail when a user ID is an even number")
 						}
@@ -121,13 +127,13 @@ var _ = Describe("Flusher", func() {
 				notPushed := []types.Checklist{
 					checklist(0), checklist(2), checklist(4), checklist(6), checklist(8),
 				}
-				Expect(f.Flush(input)).To(Equal(notPushed))
+				Expect(f.Flush(ctx, input)).To(Equal(notPushed))
 			})
 		})
 	})
 })
 
-func addChecklistsSuccess(_ []types.Checklist) error {
+func addChecklistsSuccess(_ context.Context, _ []types.Checklist) error {
 	return nil
 }
 

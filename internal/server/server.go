@@ -10,6 +10,8 @@ import (
 	"google.golang.org/grpc"
 	gref "google.golang.org/grpc/reflection"
 
+	"github.com/ozonva/ova-checklist-api/internal/repo"
+	"github.com/ozonva/ova-checklist-api/internal/saver"
 	pb "github.com/ozonva/ova-checklist-api/internal/server/generated/service"
 )
 
@@ -21,6 +23,9 @@ type Server interface {
 
 type service struct {
 	pb.UnimplementedChecklistStorageServer
+
+	storage saver.Saver
+	repository repo.Repo
 }
 
 // server implements Server
@@ -36,7 +41,7 @@ func (s *service) CreateChecklist(ctx context.Context, request *pb.CreateCheckli
 		Str("handler", "CreateChecklist").
 		Str("params", request.String()).
 		Send()
-	return &pb.CreateChecklistResponse{}, nil
+	return s.handleCreateChecklist(ctx, request)
 }
 
 func (s *service) DescribeChecklist(ctx context.Context, request *pb.DescribeChecklistRequest) (*pb.DescribeChecklistResponse, error) {
@@ -44,7 +49,7 @@ func (s *service) DescribeChecklist(ctx context.Context, request *pb.DescribeChe
 		Str("handler", "DescribeChecklist").
 		Str("params", request.String()).
 		Send()
-	return &pb.DescribeChecklistResponse{}, nil
+	return s.handleDescribeChecklist(ctx, request)
 }
 
 func (s *service) ListChecklists(ctx context.Context, request *pb.ListChecklistsRequest) (*pb.ListChecklistsResponse, error) {
@@ -52,7 +57,7 @@ func (s *service) ListChecklists(ctx context.Context, request *pb.ListChecklists
 		Str("handler", "ListChecklists").
 		Str("params", request.String()).
 		Send()
-	return &pb.ListChecklistsResponse{}, nil
+	return s.handleListChecklists(ctx, request)
 }
 
 func (s *service) RemoveChecklist(ctx context.Context, request *pb.RemoveChecklistRequest) (*pb.RemoveChecklistResponse, error) {
@@ -60,17 +65,25 @@ func (s *service) RemoveChecklist(ctx context.Context, request *pb.RemoveCheckli
 		Str("handler", "RemoveChecklist").
 		Str("params", request.String()).
 		Send()
-	return &pb.RemoveChecklistResponse{}, nil
+	return s.handleRemoveChecklist(ctx, request)
 }
 
-func New(port uint16) Server {
-	s := &server{
+func New(
+	port uint16,
+	storage saver.Saver,
+	repository repo.Repo,
+) Server {
+	srv := &server{
 		impl: grpc.NewServer(),
 		port: port,
 	}
-	pb.RegisterChecklistStorageServer(s.impl, &service{})
-	gref.Register(s.impl)
-	return s
+	svc := &service{
+		storage: storage,
+		repository: repository,
+	}
+	pb.RegisterChecklistStorageServer(srv.impl, svc)
+	gref.Register(srv.impl)
+	return srv
 }
 
 func (s *server) Start() error {
