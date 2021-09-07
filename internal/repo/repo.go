@@ -12,4 +12,5 @@ type Repo interface {
 	ListChecklists(ctx context.Context, userId, limit, offset uint64) ([]types.Checklist, error)
 	DescribeChecklist(ctx context.Context, userId uint64, checklistId string) (*types.Checklist, error)
 	RemoveChecklist(ctx context.Context, userId uint64, checklistId string) error
+	UpdateChecklist(ctx context.Context, checklist types.Checklist) error
 }

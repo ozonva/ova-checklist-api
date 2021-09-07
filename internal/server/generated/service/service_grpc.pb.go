@@ -19,9 +19,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChecklistStorageClient interface {
 	CreateChecklist(ctx context.Context, in *CreateChecklistRequest, opts ...grpc.CallOption) (*CreateChecklistResponse, error)
+	MultiCreateChecklist(ctx context.Context, in *MultiCreateChecklistRequest, opts ...grpc.CallOption) (*MultiCreateChecklistResponse, error)
 	DescribeChecklist(ctx context.Context, in *DescribeChecklistRequest, opts ...grpc.CallOption) (*DescribeChecklistResponse, error)
 	ListChecklists(ctx context.Context, in *ListChecklistsRequest, opts ...grpc.CallOption) (*ListChecklistsResponse, error)
 	RemoveChecklist(ctx context.Context, in *RemoveChecklistRequest, opts ...grpc.CallOption) (*RemoveChecklistResponse, error)
+	UpdateChecklist(ctx context.Context, in *UpdateChecklistRequest, opts ...grpc.CallOption) (*UpdateChecklistResponse, error)
 }
 
 type checklistStorageClient struct {
@@ -35,6 +37,15 @@ func NewChecklistStorageClient(cc grpc.ClientConnInterface) ChecklistStorageClie
 func (c *checklistStorageClient) CreateChecklist(ctx context.Context, in *CreateChecklistRequest, opts ...grpc.CallOption) (*CreateChecklistResponse, error) {
 	out := new(CreateChecklistResponse)
 	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/CreateChecklist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *checklistStorageClient) MultiCreateChecklist(ctx context.Context, in *MultiCreateChecklistRequest, opts ...grpc.CallOption) (*MultiCreateChecklistResponse, error) {
+	out := new(MultiCreateChecklistResponse)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/MultiCreateChecklist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,14 +79,25 @@ func (c *checklistStorageClient) RemoveChecklist(ctx context.Context, in *Remove
 	return out, nil
 }
 
+func (c *checklistStorageClient) UpdateChecklist(ctx context.Context, in *UpdateChecklistRequest, opts ...grpc.CallOption) (*UpdateChecklistResponse, error) {
+	out := new(UpdateChecklistResponse)
+	err := c.cc.Invoke(ctx, "/ozonva.ova.checklist.api.ChecklistStorage/UpdateChecklist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChecklistStorageServer is the server API for ChecklistStorage service.
 // All implementations must embed UnimplementedChecklistStorageServer
 // for forward compatibility
 type ChecklistStorageServer interface {
 	CreateChecklist(context.Context, *CreateChecklistRequest) (*CreateChecklistResponse, error)
+	MultiCreateChecklist(context.Context, *MultiCreateChecklistRequest) (*MultiCreateChecklistResponse, error)
 	DescribeChecklist(context.Context, *DescribeChecklistRequest) (*DescribeChecklistResponse, error)
 	ListChecklists(context.Context, *ListChecklistsRequest) (*ListChecklistsResponse, error)
 	RemoveChecklist(context.Context, *RemoveChecklistRequest) (*RemoveChecklistResponse, error)
+	UpdateChecklist(context.Context, *UpdateChecklistRequest) (*UpdateChecklistResponse, error)
 	mustEmbedUnimplementedChecklistStorageServer()
 }
 
@@ -86,6 +108,9 @@ type UnimplementedChecklistStorageServer struct {
 func (UnimplementedChecklistStorageServer) CreateChecklist(context.Context, *CreateChecklistRequest) (*CreateChecklistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateChecklist not implemented")
 }
+func (UnimplementedChecklistStorageServer) MultiCreateChecklist(context.Context, *MultiCreateChecklistRequest) (*MultiCreateChecklistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreateChecklist not implemented")
+}
 func (UnimplementedChecklistStorageServer) DescribeChecklist(context.Context, *DescribeChecklistRequest) (*DescribeChecklistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeChecklist not implemented")
 }
@@ -94,6 +119,9 @@ func (UnimplementedChecklistStorageServer) ListChecklists(context.Context, *List
 }
 func (UnimplementedChecklistStorageServer) RemoveChecklist(context.Context, *RemoveChecklistRequest) (*RemoveChecklistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveChecklist not implemented")
+}
+func (UnimplementedChecklistStorageServer) UpdateChecklist(context.Context, *UpdateChecklistRequest) (*UpdateChecklistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateChecklist not implemented")
 }
 func (UnimplementedChecklistStorageServer) mustEmbedUnimplementedChecklistStorageServer() {}
 
@@ -122,6 +150,24 @@ func _ChecklistStorage_CreateChecklist_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChecklistStorageServer).CreateChecklist(ctx, req.(*CreateChecklistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChecklistStorage_MultiCreateChecklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreateChecklistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChecklistStorageServer).MultiCreateChecklist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/MultiCreateChecklist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChecklistStorageServer).MultiCreateChecklist(ctx, req.(*MultiCreateChecklistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -180,6 +226,24 @@ func _ChecklistStorage_RemoveChecklist_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChecklistStorage_UpdateChecklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateChecklistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChecklistStorageServer).UpdateChecklist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ozonva.ova.checklist.api.ChecklistStorage/UpdateChecklist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChecklistStorageServer).UpdateChecklist(ctx, req.(*UpdateChecklistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChecklistStorage_ServiceDesc is the grpc.ServiceDesc for ChecklistStorage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +256,10 @@ var ChecklistStorage_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ChecklistStorage_CreateChecklist_Handler,
 		},
 		{
+			MethodName: "MultiCreateChecklist",
+			Handler:    _ChecklistStorage_MultiCreateChecklist_Handler,
+		},
+		{
 			MethodName: "DescribeChecklist",
 			Handler:    _ChecklistStorage_DescribeChecklist_Handler,
 		},
@@ -202,6 +270,10 @@ var ChecklistStorage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveChecklist",
 			Handler:    _ChecklistStorage_RemoveChecklist_Handler,
+		},
+		{
+			MethodName: "UpdateChecklist",
+			Handler:    _ChecklistStorage_UpdateChecklist_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

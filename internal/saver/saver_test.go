@@ -56,7 +56,7 @@ var _ = Describe("Saver", func() {
 				for i := 0; i < bufferSize; i++ {
 					value := checklist(uint64(i))
 					expectedRepo = append(expectedRepo, value)
-					Expect(s.TrySave(value)).To(Equal(true))
+					Expect(s.TrySave(context.Background(), value)).To(Equal(true))
 				}
 				wg.Wait() // Ensure that the flush happens because of the internal buffer overflow
 				s.Close()
@@ -82,7 +82,7 @@ var _ = Describe("Saver", func() {
 				for i := 0; i < bufferSize/2; i++ {
 					value := checklist(uint64(i))
 					expectedRepo = append(expectedRepo, value)
-					Expect(s.TrySave(value)).To(Equal(true))
+					Expect(s.TrySave(context.Background(), value)).To(Equal(true))
 				}
 				s.Close()
 
@@ -106,7 +106,7 @@ var _ = Describe("Saver", func() {
 						return nil
 					})
 				s := NewSaver(flusher, bufferSize, 50*time.Millisecond)
-				Expect(s.TrySave(checklist(0))).To(Equal(true))
+				Expect(s.TrySave(context.Background(), checklist(0))).To(Equal(true))
 				wg.Wait() // Ensure that the flush happens because of a timer tick
 				s.Close()
 
@@ -160,7 +160,7 @@ var _ = Describe("Saver", func() {
 				// First phase: trying to save all values. Only 1 and 3 will be saved
 				wg.Add(1)
 				for _, value := range valuesToSend {
-					Expect(s.TrySave(value)).To(Equal(true))
+					Expect(s.TrySave(context.Background(), value)).To(Equal(true))
 				}
 				wg.Wait()
 				Expect(repo).To(Equal(firstFlushed))
@@ -170,6 +170,42 @@ var _ = Describe("Saver", func() {
 				atomic.StoreInt32(&phase, 1)
 				wg.Wait()
 				Expect(repo).To(Equal(expectedRepo))
+
+				s.Close()
+			})
+		})
+
+		Context("When using batch save", func() {
+			It("should perform correctly", func() {
+				const bufferSize = 10
+				const amountToPush = uint(2 * bufferSize)
+				var repo []types.Checklist
+				var wg sync.WaitGroup
+				var pushedToRepo uint
+				wg.Add(1)
+				flusher.
+					EXPECT().
+					Flush(gomock.Any(), gomock.Any()).
+					AnyTimes().
+					DoAndReturn(func(ctx context.Context, values []types.Checklist) []types.Checklist {
+						repo = append(repo, values...)
+						pushedToRepo += uint(len(values))
+						if pushedToRepo == amountToPush {
+							wg.Done()
+						}
+						return nil
+					})
+				s := NewSaver(flusher, bufferSize, 50*time.Millisecond)
+				batch := make([]types.Checklist, 0, amountToPush)
+				for i := 0; i < int(amountToPush); i++ {
+					value := checklist(uint64(i))
+					batch = append(batch, value)
+				}
+
+				amount := s.TrySaveBatch(context.Background(), batch)
+				Expect(amount).To(Equal(amountToPush))
+				wg.Wait()
+				Expect(repo).To(Equal(batch))
 
 				s.Close()
 			})

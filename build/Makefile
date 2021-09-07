@@ -11,6 +11,10 @@ generate:
 		--go_out=$(ROOT)/internal/server/generated/service \
 		--go-grpc_out=$(ROOT)/internal/server/generated/service \
 		service.proto
+	protoc --proto_path $(ROOT)/pkg/proto \
+		--go_opt=paths=source_relative \
+		--go_out=$(ROOT)/internal/event \
+		event.proto
 
 test-ut:
 	go test $(ROOT)/...

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package ozonva.ova.checklist.api;
+
+option go_package = "github.com/ozonva/ova-checklist-api/pkg/event";
+
+enum EventType {
+  UNKNOWN = 0;
+  CREATED = 1;
+  REMOVED = 2;
+  UPDATED = 3;
+}
+
+message Event {
+  uint64 user_id = 1;
+  string checklist_id = 2;
+}

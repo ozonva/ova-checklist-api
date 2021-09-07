@@ -1,6 +1,7 @@
 package application
 
 import (
+	"github.com/ozonva/ova-checklist-api/internal/metrics"
 	"github.com/rs/zerolog/log"
 
 	"github.com/ozonva/ova-checklist-api/internal/config"
@@ -9,8 +10,13 @@ import (
 	"github.com/ozonva/ova-checklist-api/internal/server"
 )
 
-func runServer(cfg *config.ServerConfig, storage saver.Saver, repository repo.Repo) server.Server {
-	s := server.New(cfg.Port, storage, repository)
+func runServer(
+	cfg *config.ServerConfig,
+	storage saver.Saver,
+	repository repo.Repo,
+	met metrics.Metrics,
+) server.Server {
+	s := server.New(cfg.Port, storage, repository, met)
 	if err := s.Start(); err != nil {
 		log.Error().
 			Str("reason", "cannot run the server").
