@@ -1,7 +1,8 @@
 {
   "server_config": {
     "host": "0.0.0.0",
-    "port": 8080
+    "port": 8080,
+    "sre_port": 8081
   },
 
   "db_config": {
@@ -14,6 +15,19 @@
 
     "connection_tries": 60,
     "reconnect_period_ms": 1000
+  },
+
+  "trace_config": {
+    "service_name": "ova-checklist-api",
+    "enabled": false,
+    "log_spans": false
+  },
+
+  "kafka_config": {
+    "enabled": true,
+    "host": "ova-checklist-api-kafka",
+    "port": 9092,
+    "topic": "general"
   },
 
   "settings_config": {

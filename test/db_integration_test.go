@@ -13,11 +13,9 @@ import (
 	. "github.com/onsi/gomega"
 	"google.golang.org/protobuf/proto"
 
+	cl "github.com/ozonva/ova-checklist-api/internal/client"
 	pb "github.com/ozonva/ova-checklist-api/internal/server/generated/service"
-	cl "github.com/ozonva/ova-checklist-api/pkg/client"
 )
-
-const waitUpdateFor = 50 * time.Millisecond // TODO: remove sleeping from tests
 
 func TestIntegration(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -46,7 +44,6 @@ var _ = Describe("Database integration", func() {
 			})
 			Expect(err).To(BeNil())
 			Expect(len(createResponse.ChecklistId)).To(BeNumerically(">", 0))
-			time.Sleep(waitUpdateFor)
 
 			descResponse, err := client.DescribeChecklist(context.Background(), &pb.DescribeChecklistRequest{
 				UserId:      1,
@@ -54,6 +51,31 @@ var _ = Describe("Database integration", func() {
 			})
 			Expect(err).To(BeNil())
 			Expect(proto.Equal(descResponse.Checklist, checklist)).To(BeTrue())
+		})
+	})
+
+	Describe("When we write a batch of checklists to the service", func() {
+		It("should be able to return all of them", func() {
+			checklists := []*pb.Checklist{
+				makeChecklist(1, "First checklist"),
+				makeChecklist(1, "Second checklist"),
+			}
+			createResponse, err := client.MultiCreateChecklist(context.Background(), &pb.MultiCreateChecklistRequest{
+				Checklists: checklists,
+			})
+			Expect(err).To(BeNil())
+			Expect(createResponse.TotalSaved).To(Equal(uint32(2)))
+			waitForDatabaseUpdate()
+
+			listResponse, err := client.ListChecklists(context.Background(), &pb.ListChecklistsRequest{
+				UserId: 1,
+				Limit:  10,
+				Offset: 0,
+			})
+			Expect(err).To(BeNil())
+			Expect(len(listResponse.Checklists)).To(Equal(2))
+			Expect(listResponse.Checklists[0].Checklist.Title).To(Equal("First checklist"))
+			Expect(listResponse.Checklists[1].Checklist.Title).To(Equal("Second checklist"))
 		})
 	})
 
@@ -77,7 +99,6 @@ var _ = Describe("Database integration", func() {
 					ChecklistId: response.ChecklistId,
 				})
 			}
-			time.Sleep(waitUpdateFor)
 		})
 
 		It("should be possible to list all of them", func() {
@@ -125,12 +146,47 @@ var _ = Describe("Database integration", func() {
 			Expect(proto.Equal(response.Checklists[1], checklists[2])).To(BeTrue())
 		})
 	})
+
+	Describe("When there is a checklist saved in the service storage", func() {
+		It("should be possible to modify it", func() {
+			checklist := makeChecklist(1, "First checklist")
+			createResponse, _ := client.CreateChecklist(context.Background(), &pb.CreateChecklistRequest{
+				Checklist: checklist,
+			})
+			descResponse, err := client.DescribeChecklist(context.Background(), &pb.DescribeChecklistRequest{
+				UserId:      1,
+				ChecklistId: createResponse.ChecklistId,
+			})
+			Expect(len(descResponse.Checklist.Items)).To(Equal(1))
+			Expect(descResponse.Checklist.Items[0].IsComplete).To(BeFalse())
+
+			updated := descResponse.Checklist
+			updated.Items[0].IsComplete = true
+			_, err = client.UpdateChecklist(context.Background(), &pb.UpdateChecklistRequest{
+				ChecklistId: createResponse.ChecklistId,
+				Checklist:   updated,
+			})
+			Expect(err).To(BeNil())
+
+			descResponse, err = client.DescribeChecklist(context.Background(), &pb.DescribeChecklistRequest{
+				UserId:      1,
+				ChecklistId: createResponse.ChecklistId,
+			})
+			Expect(len(descResponse.Checklist.Items)).To(Equal(1))
+			Expect(descResponse.Checklist.Items[0].IsComplete).To(BeTrue())
+		})
+	})
 })
 
 func cleanUpDatabase(dbConnect *pgx.Conn) {
 	dbConnect.Exec(context.Background(), `
 		DELETE FROM checklists;
 	`)
+}
+
+func waitForDatabaseUpdate() {
+	const waitTime = 50 * time.Millisecond
+	time.Sleep(waitTime) // TODO: remove sleeping from tests
 }
 
 func makeChecklist(userId uint64, title string) *pb.Checklist {

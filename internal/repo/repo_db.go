@@ -13,14 +13,16 @@ import (
 
 // repoDB implements Repo
 type repoDB struct {
-	pool *pgxpool.Pool
+	pool          *pgxpool.Pool
+	writeObserver WriteObserver
 }
 
 type queryBuilderConsumer func(*squirrel.StatementBuilderType) (squirrel.Sqlizer, error)
 
-func NewRepoOverDB(pool *pgxpool.Pool) Repo {
+func NewRepoOverDB(pool *pgxpool.Pool, writeObserver WriteObserver) Repo {
 	return &repoDB{
-		pool: pool,
+		pool:          pool,
+		writeObserver: writeObserver,
 	}
 }
 
@@ -29,7 +31,7 @@ func (r *repoDB) AddChecklists(ctx context.Context, checklists []types.Checklist
 		return nil
 	}
 
-	return r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
+	err := r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
 		inserter := builder.Insert("checklists").Columns("user_id", "checklist_id", "data")
 		for _, checklist := range checklists {
 			serialized, err := checklist.ToJSON()
@@ -40,6 +42,11 @@ func (r *repoDB) AddChecklists(ctx context.Context, checklists []types.Checklist
 		}
 		return inserter, nil
 	})
+
+	if err == nil {
+		r.writeObserver.OnAddSuccess(ctx, checklists)
+	}
+	return err
 }
 
 func (r *repoDB) ListChecklists(ctx context.Context, userId, limit, offset uint64) ([]types.Checklist, error) {
@@ -94,7 +101,7 @@ func (r *repoDB) DescribeChecklist(ctx context.Context, userId uint64, checklist
 }
 
 func (r *repoDB) RemoveChecklist(ctx context.Context, userId uint64, checklistId string) error {
-	return r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
+	err := r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
 		remover := builder.
 			Delete("checklists").
 			Where(squirrel.Eq{
@@ -103,6 +110,33 @@ func (r *repoDB) RemoveChecklist(ctx context.Context, userId uint64, checklistId
 			})
 		return remover, nil
 	})
+
+	if err == nil {
+		r.writeObserver.OnRemoveSuccess(ctx, userId, checklistId)
+	}
+	return err
+}
+
+func (r *repoDB) UpdateChecklist(ctx context.Context, checklist types.Checklist) error {
+	err := r.writeWithPool(ctx, func(builder *squirrel.StatementBuilderType) (squirrel.Sqlizer, error) {
+		serialized, err := checklist.ToJSON()
+		if err != nil {
+			return nil, err
+		}
+		updater := builder.
+			Update("checklists").
+			Set("data", serialized).
+			Where(squirrel.Eq{
+				"user_id":      checklist.UserID,
+				"checklist_id": checklist.ID,
+			})
+		return updater, nil
+	})
+
+	if err == nil {
+		r.writeObserver.OnUpdateSuccess(ctx, checklist)
+	}
+	return err
 }
 
 func (r *repoDB) writeWithPool(ctx context.Context, consumer queryBuilderConsumer) error {

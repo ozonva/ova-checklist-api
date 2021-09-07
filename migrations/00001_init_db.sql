@@ -8,6 +8,5 @@ CREATE TABLE IF NOT EXISTS checklists (
     PRIMARY KEY (user_id, checklist_id)
 );
 
-CREATE INDEX IF NOT EXISTS checklist_id_idx ON checklists (checklist_id);
-CREATE INDEX IF NOT EXISTS created_at_idx ON checklists (checklist_id);
+CREATE INDEX IF NOT EXISTS created_at_idx ON checklists (created_at);
 -- +goose StatementEnd

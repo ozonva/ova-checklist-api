@@ -92,3 +92,17 @@ func (mr *MockRepoMockRecorder) RemoveChecklist(ctx, userId, checklistId interfa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveChecklist", reflect.TypeOf((*MockRepo)(nil).RemoveChecklist), ctx, userId, checklistId)
 }
+
+// UpdateChecklist mocks base method.
+func (m *MockRepo) UpdateChecklist(ctx context.Context, checklist types.Checklist) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChecklist", ctx, checklist)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateChecklist indicates an expected call of UpdateChecklist.
+func (mr *MockRepoMockRecorder) UpdateChecklist(ctx, checklist interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChecklist", reflect.TypeOf((*MockRepo)(nil).UpdateChecklist), ctx, checklist)
+}

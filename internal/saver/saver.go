@@ -2,6 +2,9 @@ package saver
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"github.com/ozonva/ova-checklist-api/internal/tracing"
 	"log"
 	"sync"
 	"time"
@@ -11,7 +14,11 @@ import (
 )
 
 type Saver interface {
-	TrySave(checklist types.Checklist) bool
+	TrySave(ctx context.Context, checklist types.Checklist) bool
+
+	// TrySaveBatch returns number of successfully saved checklists
+	TrySaveBatch(ctx context.Context, checklist []types.Checklist) uint
+
 	Close()
 }
 
@@ -49,15 +56,37 @@ func NewSaver(
 	return result
 }
 
-func (s *saver) TrySave(checklist types.Checklist) (ok bool) {
+func (s *saver) TrySave(ctx context.Context, checklist types.Checklist) (ok bool) {
 	ok = true
+	ctx, span := tracing.RegisterSpan(ctx, "TrySave")
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("unable to save value due to an error: %v", err)
+			span.WriteError(errors.New("unable to save checklist, an error occurred"))
+			log.Printf("unable to save checklist due to an error: %v", err)
 			ok = false
 		}
+		span.Finish()
 	}()
 	s.inputPipe <- checklist
+	span.WriteInfo("successfully saved checklist")
+	return
+}
+
+func (s *saver) TrySaveBatch(ctx context.Context, checklists []types.Checklist) (number uint) {
+	number = 0
+	ctx, span := tracing.RegisterSpan(ctx, "TrySaveBatch")
+	defer func() {
+		if err := recover(); err != nil {
+			span.WriteError(errors.New(fmt.Sprintf("saved only %d of %d checklists, an error occurred", number, len(checklists))))
+			log.Printf("unable to save checklists due to an error: %v", err)
+		}
+		span.Finish()
+	}()
+	for _, checklist := range checklists {
+		s.inputPipe <- checklist
+		number++
+	}
+	span.WriteInfo("successfully saved %d of %d checklists", number, len(checklists))
 	return
 }
 

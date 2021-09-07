@@ -8,22 +8,36 @@ import (
 )
 
 type ServerConfig struct {
-	Host string `json:"host"`
-	Port uint16 `json:"port"`
+	Host    string `json:"host"`
+	Port    uint16 `json:"port"`
+	SrePort uint16 `json:"sre_port"`
 }
 
 type DBConfig struct {
-	Host            string `json:"host"`
-	Port            uint16 `json:"port"`
-	DbName          string `json:"db_name"`
-	Username        string `json:"username"`
-	Password        string `json:"password"`
-	MaxConnections  uint32 `json:"max_connections"`
+	Host           string `json:"host"`
+	Port           uint16 `json:"port"`
+	DbName         string `json:"db_name"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	MaxConnections uint32 `json:"max_connections"`
 
 	// The application at the startup tries to connect to a DB ConnectionTries times
 	// waiting RetryPeriodMs milliseconds between retries
 	ConnectionTries uint32 `json:"connection_tries"`
 	RetryPeriodMs   uint32 `json:"reconnect_period_ms"`
+}
+
+type TraceConfig struct {
+	ServiceName string `json:"service_name"`
+	Enabled     bool   `json:"enabled"`
+	LogSpans    bool   `json:"log_spans"`
+}
+
+type KafkaConfig struct {
+	Enabled bool   `json:"enabled"`
+	Host    string `json:"host"`
+	Port    uint16 `json:"port"`
+	Topic   string `json:"topic"`
 }
 
 type SettingsConfig struct {
@@ -35,6 +49,8 @@ type SettingsConfig struct {
 type ApplicationConfig struct {
 	Server   ServerConfig   `json:"server_config"`
 	Db       DBConfig       `json:"db_config"`
+	Trace    TraceConfig    `json:"trace_config"`
+	Kafka    KafkaConfig    `json:"kafka_config"`
 	Settings SettingsConfig `json:"settings_config"`
 }
 

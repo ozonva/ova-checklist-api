@@ -5,9 +5,11 @@ option go_package = "github.com/ozonva/ova-checklist-api/pkg/service";
 
 service ChecklistStorage {
   rpc CreateChecklist(CreateChecklistRequest) returns (CreateChecklistResponse);
+  rpc MultiCreateChecklist(MultiCreateChecklistRequest) returns (MultiCreateChecklistResponse);
   rpc DescribeChecklist(DescribeChecklistRequest) returns (DescribeChecklistResponse);
   rpc ListChecklists(ListChecklistsRequest) returns (ListChecklistsResponse);
   rpc RemoveChecklist(RemoveChecklistRequest) returns (RemoveChecklistResponse);
+  rpc UpdateChecklist(UpdateChecklistRequest) returns (UpdateChecklistResponse);
 }
 
 // Request: CreateChecklist
@@ -17,6 +19,15 @@ message CreateChecklistRequest {
 
 message CreateChecklistResponse {
   string checklist_id = 1;
+}
+
+// Request: MultiCreateChecklist
+message MultiCreateChecklistRequest {
+  repeated ozonva.ova.checklist.api.Checklist checklists = 2;
+}
+
+message MultiCreateChecklistResponse {
+  uint32 total_saved = 1;
 }
 
 // Request: DescribeChecklist
@@ -47,6 +58,15 @@ message RemoveChecklistRequest {
 }
 
 message RemoveChecklistResponse {
+}
+
+// Request: UpdateChecklist
+message UpdateChecklistRequest {
+  Checklist checklist = 1;
+  string checklist_id = 2;
+}
+
+message UpdateChecklistResponse {
 }
 
 // Additional structures

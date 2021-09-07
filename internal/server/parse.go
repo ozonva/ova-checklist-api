@@ -12,18 +12,35 @@ func parseProtoChecklistItem(protoItem *pb.ChecklistItem) types.ChecklistItem {
 	}
 }
 
-func parseProtoChecklist(protoChecklist *pb.Checklist) types.Checklist {
+func parseProtoChecklist(protoChecklist *pb.Checklist, id *string) types.Checklist {
 	items := make([]types.ChecklistItem, 0, len(protoChecklist.Items))
 	for _, protoItem := range protoChecklist.Items {
 		items = append(items, parseProtoChecklistItem(protoItem))
 	}
 	return types.Checklist{
-		ID:          types.NewChecklistID(),
+		ID:          getChecklistId(id),
 		UserID:      protoChecklist.UserId,
 		Title:       protoChecklist.Title,
 		Description: protoChecklist.Description,
 		Items:       items,
 	}
+}
+
+func getChecklistId(id *string) string {
+	if id != nil {
+		return *id
+	}
+	return types.NewChecklistID()
+}
+
+func parseProtoChecklists(protoChecklists []*pb.Checklist) []types.Checklist {
+	checklists := make([]types.Checklist, 0, len(protoChecklists))
+	for _, protoChecklist := range protoChecklists {
+		if protoChecklist != nil {
+			checklists = append(checklists, parseProtoChecklist(protoChecklist, nil))
+		}
+	}
+	return checklists
 }
 
 func toProtoChecklistItem(item *types.ChecklistItem) *pb.ChecklistItem {

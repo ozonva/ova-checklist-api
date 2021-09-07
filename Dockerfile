@@ -10,7 +10,7 @@ ENV CFG=${HOME}/conf
 
 WORKDIR ${HOME}
 
-RUN apk add --update make
+RUN apk add --no-cache --update make
 
 RUN mkdir ${SRC}
 
